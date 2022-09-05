@@ -8,7 +8,7 @@ This is a command-line application for managing a company's employee database. I
 
 The following video shows an example of the application being used from the command line:
 
-[![A video thumbnail shows the command-line employee management application with a play button overlaying the view.]()]()
+[![A video thumbnail shows the command-line employee management application with a play button overlaying the view.](./Assets/employee-tracker-screenshot.png)](https://drive.google.com/file/d/1KfL1lVETjOA5Qr4KidN-fw_pw1jtKR2q/view?usp=sharing)
 
 ## User Story
 
