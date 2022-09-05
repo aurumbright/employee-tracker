@@ -13,11 +13,10 @@ INSERT INTO company_role (title, salary, department_id)
             ('Marketing Manager', 75000, 3);
 
 
-INSERT INTO employees (first_name, last_name, role_id, manager_id)
-    VALUES ('Jan', 'Brown', 1, 1),
-            ('Mike', 'Smith', 2, 1),
-            ('Derek', 'Robertson', 3, 1),
-            ('Jennifer', 'James', 4, 2),
-            ('Mikaela', 'Morris', 5, 6),
-            ('Amber', 'Michaelson', 6, 1),
-            ('Jeffrey', 'Asher', 2, 6);
+INSERT INTO employees (first_name, last_name, role_id, manager)
+    VALUES ('Jan', 'Brown', 1, NULL),
+            ('Mike', 'Smith', 2, 'Jan Brown'),
+            ('Derek', 'Robertson', 3, 'Jan Brown'),
+            ('Jennifer', 'James', 4, 'Mike Smith'),
+            ('Mikaela', 'Morris', 5, 'Amber Michaelson'),
+            ('Amber', 'Michaelson', 6, 'Jan Brown');
