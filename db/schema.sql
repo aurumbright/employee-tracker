@@ -24,9 +24,12 @@ CREATE TABLE employees (
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   role_id INT,
-  manager VARCHAR(30),
+  manager_id INT REFERENCES employees(id),
 
   FOREIGN KEY (role_id)
   REFERENCES company_role(id)
   ON DELETE SET NULL
 );
+
+
+

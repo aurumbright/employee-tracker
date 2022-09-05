@@ -127,9 +127,10 @@ const addEmployeeInput = [
         choices: chooseRole()
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'managerName',
         message: "Enter employee's manager: ",
+        choices: chooseEmployee()
     },
 ];
 
@@ -210,10 +211,11 @@ function viewRoles() {
 }
 
 function viewEmployees() {
-    db.query(`SELECT employees.id, first_name, last_name, company_role.title, company_role.salary, departments.department_name, manager 
-    FROM employees 
+    db.query(`SELECT employees.id, employees.first_name AS 'First Name', employees.last_name AS 'Last Name', company_role.title AS 'Role', company_role.salary AS 'Salary', departments.department_name AS 'Department', CONCAT(m.first_name, ' ', m.last_name) AS 'Manager'
+    FROM employees
     JOIN company_role ON employees.role_id = company_role.id 
-    JOIN departments ON company_role.department_id = departments.id`, function (err, results) {
+    JOIN departments ON company_role.department_id = departments.id
+    LEFT JOIN employees m ON employees.manager_id = m.id;`, function (err, results) {
         if (err) throw err
         console.table(results);
         employeeTracker();
@@ -268,13 +270,14 @@ function addEmployee() {
         .prompt(addEmployeeInput)
         .then(function (results) {
             let roleId = chooseRole().indexOf(results.employeeRole) + 1;
+            let managerId = chooseEmployee().indexOf(results.managerName) + 1;
 
             db.query("INSERT INTO employees SET ?",
                 {
                     first_name: results.employeeFirstName,
                     last_name: results.employeeLastName,
                     role_id: roleId,
-                    manager: results.managerName,
+                    manager_id: managerId,
                 },
                 function (err) {
                     if (err) throw err
