@@ -4,6 +4,7 @@ const cTable = require('console.table');
 
 require('dotenv').config();
 
+// connecting to database
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -14,6 +15,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the company_db database.`)
 );
 
+// SQL queries to print lists of departments, roles, employees to inquirer
 const departmentList = [];
 function chooseDepartment() {
     db.query("SELECT department_name FROM departments", function (err, res) {
@@ -58,6 +60,7 @@ function chooseEmployeeId() {
     return employeeIdList;
 }
 
+// Inquirer questions
 const starterQuestions = [
     {
         type: "list",
@@ -155,6 +158,7 @@ const updateEmployeeInput = [
     },
 ];
 
+// Primary code
 function employeeTracker() {
     inquirer
         .prompt(starterQuestions)
@@ -192,8 +196,9 @@ function employeeTracker() {
         })
 }
 
+// MYSQL queries for use by primary code
 function viewDepartments() {
-    db.query('SELECT * FROM departments', function (err, results) {
+    db.query('SELECT id, department_name AS "Department" FROM departments', function (err, results) {
         if (err) throw err
         console.table(results);
         employeeTracker();
@@ -201,7 +206,7 @@ function viewDepartments() {
 }
 
 function viewRoles() {
-    db.query(`SELECT company_role.id, title, salary, departments.department_name 
+    db.query(`SELECT company_role.id, title AS 'Title', salary AS 'Salary', departments.department_name AS 'Department' 
                     FROM company_role 
                     JOIN departments ON company_role.department_id = departments.id;`,  function (err, results) {
         if (err) throw err
@@ -302,4 +307,5 @@ function updateEmployee() {
         })
 }
 
+// initialize primary
 employeeTracker();
