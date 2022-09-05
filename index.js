@@ -36,15 +36,26 @@ function chooseRole() {
     return roleList;
 }
 
-const managerList = [];
-function chooseManager() {
+const employeeList = [];
+function chooseEmployee() {
     db.query("SELECT first_name, last_name FROM employees", function (err, res) {
         if (err) throw err
         for (var i = 0; i < res.length; i++) {
-            managerList.push(res[i].first_name);
+            employeeList.push(res[i].first_name);
         }
     })
-    return managerList;
+    return employeeList;
+}
+
+const employeeIdList = [];
+function chooseEmployeeId() {
+    db.query("SELECT id FROM employees", function (err, res) {
+        if (err) throw err
+        for (var i = 0; i < res.length; i++) {
+            employeeIdList.push(res[i].id);
+        }
+    })
+    return employeeIdList;
 }
 
 const starterQuestions = [
@@ -94,7 +105,7 @@ const addRoleInput = [
         type: 'list',
         name: 'manager',
         message: 'Enter manager for new role: ',
-        choices: chooseManager()
+        choices: chooseEmployee()
     },
 ];
 
@@ -119,20 +130,28 @@ const addEmployeeInput = [
         type: 'list',
         name: 'managerName',
         message: "Enter employee's manager: ",
-        choices: chooseManager()
+        choices: chooseEmployee()
     },
 ];
 
 const updateEmployeeInput = [
     {
         type: 'list',
-        name: 'employeeNames',
+        name: 'employeeName',
         message: "Select employee: ",
+        choices: chooseEmployee()
     },
     {
-        type: 'input',
+        type: 'list',
+        name: 'employeeId',
+        message: 'Select employee ID: ',
+        choices: chooseEmployeeId()
+    },
+    {
+        type: 'list',
         name: 'employeeNewRole',
         message: "Enter employee's new role: ",
+        choices: chooseRole()
     },
 ];
 
@@ -167,11 +186,7 @@ function employeeTracker() {
                     break;
 
                 case "Quit":
-                    try {
-
-                    } catch (err) {
-                        console.log(err.name + " in choice");
-                    }
+                        console.log("Thank you! Hit control + C to exit application.");
                     break;
             }
         })
@@ -220,17 +235,19 @@ function addDepartment() {
     })
 }
 
-
 function addRole() {
     db.query("SELECT company_role.title AS roleName, company_role.salary AS salary from company_role", function (err, results) {
 
         inquirer
             .prompt(addRoleInput)
             .then(function (results) {
+                let departmentId = chooseDepartment().indexOf(results.department) + 1;
+
                 db.query("INSERT INTO company_role SET ?",
                     {
                         title: results.roleName,
                         salary: results.salary,
+                        department_id: departmentId,
 
                     },
                     function (err) {
@@ -242,13 +259,12 @@ function addRole() {
     })
 }
 
-
 function addEmployee() {
     inquirer
         .prompt(addEmployeeInput)
         .then(function (results) {
             let roleId = chooseRole().indexOf(results.employeeRole) + 1;
-            let managerId = chooseManager().indexOf(results.managerName) + 1;
+            let managerId = chooseEmployee().indexOf(results.managerName) + 1;
 
             db.query("INSERT INTO employees SET ?",
                 {
@@ -266,11 +282,18 @@ function addEmployee() {
 }
 
 function updateEmployee() {
+    inquirer
+        .prompt(updateEmployeeInput)
+        .then(function (results) {
+            let roleId = chooseRole().indexOf(results.employeeNewRole) + 1;
 
-    // inquirer: select employee
-    // ask for new role
-    //UPDATE employees SET role = ? WHERE id = ?
+            let setItems = [roleId, results.employeeName, results.employeeId];
 
+            db.query('UPDATE employees SET role_id=? WHERE employees.first_name=? AND employees.id=?', setItems);
+
+            console.table(results);
+            employeeTracker();
+        })
 }
 
 employeeTracker();
